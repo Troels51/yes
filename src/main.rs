@@ -15,10 +15,10 @@ const fn create_yes_array() -> [u8; N] {
 const YES_ARRAY: [u8; N] = create_yes_array();
 
 
-fn main() -> io::Result<()>{
+fn main() {
     let stdout = io::stdout();
     let mut handle = stdout.lock();
     loop {
-        handle.write_all(&YES_ARRAY)?;
+        let _ = handle.write(&YES_ARRAY);
     }
 }
