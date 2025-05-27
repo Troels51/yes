@@ -1,7 +1,8 @@
 
 #![no_main]
+#![no_std]
 use core::arch::asm;
-
+extern crate libc;
 
 const N: usize = 1024;
 const YES: [u8; 2] = *b"y\n";
@@ -46,12 +47,17 @@ pub unsafe fn write(fd: usize, buffer: &[u8; N], count: usize) -> usize {
     ret
 }
 
-
 #[unsafe(no_mangle)]
-pub fn main(_argc: i32, _argv: *const *const u8) {
+pub extern "C" fn main(_argc: isize, _argv: *const *const u8) -> isize {
     unsafe {
         loop {
             let _ = write(1, &YES_ARRAY, N);
         }
     }
+}
+
+
+#[panic_handler]
+fn my_panic(_info: &core::panic::PanicInfo) -> ! {
+    loop {}
 }

@@ -8,3 +8,10 @@ strip = true
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[profile.dev]
+# Must always use panic = "abort" to avoid needing to define the unstable eh_personality lang item.
+panic = "abort"
+
+[dependencies]
+libc = { version = "0.2", default-features = false }
