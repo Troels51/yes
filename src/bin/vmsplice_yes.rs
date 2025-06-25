@@ -1,18 +1,17 @@
 
-use core::alloc::{self, Layout};
-use std::{os::raw::c_void, ptr::slice_from_raw_parts, slice::{from_raw_parts, from_raw_parts_mut}};
+use core::alloc::Layout;
+use std::{os::raw::c_void, slice::from_raw_parts_mut};
 
-use libc::{F_SETPIPE_SZ, MADV_HUGEPAGE};
+use libc::{F_SETPIPE_SZ};
 extern crate libc;
 
-const N: usize = 2097152; // Huge page
+const N: usize = 1024*1024; // 1Mib
 const YES: [u8; 2] = *b"y\n";
 
 fn main() {
     unsafe {
         let layout = Layout::from_size_align(N, N).unwrap();
         let ptr = std::alloc::alloc(layout);
-        libc::madvise(ptr as *mut c_void, N, MADV_HUGEPAGE);
         let yes_array = from_raw_parts_mut(ptr, N);
         let mut i = 0;
         while i < yes_array.len() {
@@ -26,8 +25,6 @@ fn main() {
             iov_base: ptr as *mut c_void,
             iov_len: N,
         };
-        loop {
-            libc::vmsplice(1, &iovec, 1, 0);
-        }
+        while libc::vmsplice(1, &iovec, 1, 0) != -1 {}
     }
 }
